@@ -1,0 +1,59 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: CONVERSION-SERVICE
+  datasource:
+    #versao localhost Agora que produto sera dockerizado, pode acessar db pelo nome container ja que estao na mesma network
+    url: jdbc:mysql://localhost:3306/quotedb
+    #versao dockerizada
+    #url: jdbc:mysql://db_quote:3306/db_quote
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        show_sql: true
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      #Antes de ser dockerizado
+      defaultZone: http://localhost:8761/eureka/
+      #versao dockerizada
+      #defaultZone: http://eureka-server:8761/eureka/
+
+# Quote-Service provider
+quote-service:
+  api:
+    url: http://localhost:8081
+
+logging:
+  pattern:
+    level: 5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]
+  config: classpath:logback.xml
+  level:
+    root: INFO
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0
+
+springdoc:
+  api-docs:
+    groups:
+      enabled: true
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
