@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" >
+    <include resource="org/springframework/boot/logging/logback/base.xml" />
+    <property name="conversion-service-app" value="${PAPERTRAIL_APP:-app}" />
+    <appender name="SYSLOG" class="com.papertrailapp.logback.Syslog4jAppender">
+        <syslogHost> logs.papertrailapp.com:39943</syslogHost>
+        <facility>USER</facility>
+        <suffixPattern>${PAPERTRAIL_APP:-app} %highlight([%.-1level]) %35.35logger{35}:\t%m\t%cyan%ex{5}</suffixPattern>
+        <throwableExcluded>true</throwableExcluded>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%-5level %logger{35}: %m%n%xEx</pattern>
+        </layout>
+        <syslogConfig class="org.productivity.java.syslog4j.impl.net.tcp.ssl.SSLTCPNetSyslogConfig">
+            <!-- remote system to log to -->
+            <host> logs.papertrailapp.com</host>
+            <!-- remote port to log to -->
+            <port>39943</port>
+            <!-- program name to log as -->
+            <ident>gateway-conversion-app</ident>
+            <!-- max log message length in bytes -->
+            <maxMessageLength>128000</maxMessageLength>
+        </syslogConfig>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="SYSLOG" />
+    </root>
+
+</configuration>

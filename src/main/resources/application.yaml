@@ -1,0 +1,24 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: CONVERSION-APP-GATEWAY
+eureka:
+  client:
+    service-url:
+      #versao localhost antes de dockerizacao, uma vez no docker todos devem estar com jar rodando na mesma network
+      defaultZone: http://localhost:8761/eureka
+      #versao dockerizada
+      #defaultZone: http://eureka-server:8761/eureka/
+logging:
+  pattern:
+    level: 5p [${spring.application.name}, %X{traceId:-}, %X{spanId:-}]
+  config: classpath:logback.xml
+
+management:
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  tracing:
+    sampling:
+      probability: 1.0 #poderia ir de 0.1 ate 1.0 (0,2 ou 0.3 parece ideal) em aplicacoes de grande volume de request, nao recomendado colocar 100% porque vai travar o zipkin
